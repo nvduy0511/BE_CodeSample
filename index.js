@@ -3,6 +3,12 @@ const express = require('express')
 const app = express()
 var path = require('path');
 
+
+const { customAlphabet } = require('nanoid');
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-_abcdefghijklmnopqrstuvwxyz';
+const nanoid = customAlphabet(alphabet, 5);
+
+
 app.use(express.json())
 app.use(express.urlencoded({
   extended:true
@@ -18,18 +24,16 @@ app.get('/hello', (req, res) => {
   res.send('Hello World!')
 })
 
+
+app.get('/getID',(req,res) =>{
+  res.send(nanoid());
+})
 app.get('/delete', (req, res) => {
   compiler.flush(function(){
     console.log('All temporary files flushed !'); 
     });
   res.send('Delete Success!')
 })
-
-app.post('/a', function(req,res){
-  console.log(req.body.a)
-  res.send('aolk')
-})
-
 
 app.post('/compilecode' , function (req , res ) {
 
@@ -43,27 +47,22 @@ app.post('/compilecode' , function (req , res ) {
     if(input === ""){
         var envData = { OS : "windows" , cmd : "g++", options: {timeout:1000 }};	   
           compiler.compileCPP(envData , code , function (data) {
-          if(data.error)
-          {
-            res.send(data.error);
-          }    	
-          else
-          {
-            res.send({output:data.output.replaceAll('\r','')});
-          }});
+            res.send(
+            {
+              error:!!data.error ? data.error :'',
+              output:!!data.error ? '':data.output.replaceAll('\r','')
+            });
+          });
     }     
     else{    
-
       var envData = { OS : "windows" , cmd : "g++", options: {timeout:1000 }};	   	
       compiler.compileCPPWithInput(envData , code ,input , function (data) {
-      if(data.error)
-      {
-        res.send(data.error);    		
-      }
-      else
-      {
-        res.send({output:data.output.replaceAll('\r','')});
-      }});
+        res.send(
+          {
+            error:!!data.error ? data.error :'',
+            output:!!data.error ? '':data.output.replaceAll('\r','')
+          });
+      });
     }
   
   }

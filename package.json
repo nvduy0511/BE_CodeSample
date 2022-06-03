@@ -12,6 +12,7 @@
   "dependencies": {
     "compilex": "^0.7.4",
     "express": "^4.18.1",
+    "nanoid": "^3.3.4",
     "nodemon": "^2.0.16",
     "path": "^0.12.7"
   }
